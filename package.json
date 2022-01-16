@@ -1,0 +1,27 @@
+{
+  "name": "microservice-utility",
+  "version": "1.0.0",
+  "description": "A simple microservice utility tool which provides various different services via APIs which are easy to use and consume",
+  "main": "server.js",
+  "scripts": {
+    "test": "node server.js"
+  },
+  "keywords": [
+    "ExpressJS",
+    "Node.js",
+    "API",
+    "Microservice",
+    "freeCodeCamp",
+    "backend",
+    "JavaScript",
+    "HTTP"
+  ],
+  "author": "Saideep Dicholkar",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.2",
+    "express-rate-limit": "^6.1.0",
+    "serverless-http": "^2.7.0"
+  }
+}
