@@ -19,7 +19,7 @@ app.use(function (req, res, next) {
 // Set up rate limiter: maximum of 10 requests per minute
 const rateLimit = require('express-rate-limit');
 const limiter = rateLimit({
-    windowMs: 1*60*1000, // 1 Minute
+    windowMs: 1 * 60 * 1000, // 1 Minute
     max: 60
 });
 
@@ -28,7 +28,7 @@ app.use('/api', limiter);
 // apply rate limiter to static requests
 app.use('/', limiter);
 
-router.get("/", function(req, res) {
+router.get("/", function (req, res) {
 
     let currentDate = new Date();
     let jsonDateTime = JSON.stringify({ unix: currentDate.getTime(), utc: currentDate.toUTCString() });
@@ -39,13 +39,13 @@ router.get("/", function(req, res) {
 
 
 // Simple Hello API endpoint
-router.get("/api/hello", function(req, res) {
+router.get("/api/hello", function (req, res) {
     res.json({ greeting: 'Hello API' });
 });
 
 
 // Request Header Parser API endpoint
-router.get("/api/whoami", function(req, res) {
+router.get("/api/whoami", function (req, res) {
     res.json({
         ipaddress: req.headers['client-ip'] || req.headers['x-forwarded-for'] || req.socket.address().address || null,
         language: req.headers['accept-language'],
@@ -74,20 +74,50 @@ router.get("/api/:date?", function (req, res) {
 
 
 // URL Shortener API endpoint
-router.post('/api/shorturl', function(req, res) {
-	// console.log(req.body.url);
-	// res.send(req.body.url);
-	res.json(JSON.parse(urlshortener.postUrl(req.body.url)));
+router.post('/api/shorturl', function (req, res, next) {
+    console.log(`Input Body: ${req.body}`);
+    urlshortener.insertAndSaveUrl(JSON.parse(req.body).url, function (err, data) {
+        if (err) {
+            console.log(`Error in response: ${err}`);
+            return next(err);
+        }
+        if (!data) {
+            console.log('Missing `done()` argument');
+            return next({ message: "Missing callback argument" });
+        }
+        console.log(`Response Data: ${data}`);
+        res.json(data);
+    });
 });
 
-router.get('/api/shorturl/:shorturl?', function(req, res) {
-	console.log(req.params.shorturl);
-	// res.json(urlshortener.getUrl(req.params.shorturl));
-	// urlshortener.getUrl(req.params.shorturl);
-	let result = urlshortener.findByShortUrl(req.params.shorturl);
-	console.log(`Print get from server: ${result}`);
-	res.json(result);
-})
+router.get('/api/shorturl/:id', function (req, res, next) {
+    console.log(`Input Id: ${req.params.id}`);
+    let errorJSON = { error: "Invalid URL" };
+    
+    // Check if input Id is number
+    if (!req.params.id.match(/[\D+]/ig)) {
+        urlshortener.findUrlById(req.params.id, function (err, data) {
+            if (err) {
+                console.log(`Error in response: ${err}`);
+                res.json(errorJSON);
+                return next(err);
+            }
+            else if (!data) {
+                console.log('Missing `done()` argument');
+                res.json(errorJSON);
+                return next({ message: "Missing callback argument" });
+            }
+            else {
+                console.log(`Response Data: ${JSON.stringify(data)}`);
+                res.json(data);
+                // res.redirect(data.original_url);
+            }
+        });
+    }
+    else {
+        res.json(errorJSON);
+    }
+});
 
 app.use('/', router);
 
