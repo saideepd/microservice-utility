@@ -83,10 +83,11 @@ router.post('/api/shorturl', function (req, res, next) {
         }
         if (!data) {
             console.log('Missing `done()` argument');
-            return next({ message: "Missing callback argument" });
+            res.json({ message: "Error creating record" });
+            return next({ message: "Error creating record" });
         }
         console.log(`Response Data: ${data}`);
-        res.json({ original_url: data.original_url, short_url: data.short_url });
+        res.json({ original_url: data.original_url, short_url: data.short_url, message: data.message, error: data.error });
     });
 });
 
@@ -109,7 +110,7 @@ router.get('/api/shorturl/:id', function (req, res, next) {
             }
             else {
                 console.log(`Response Data: ${JSON.stringify(data)}`);
-                res.json({ original_url: data.original_url, short_url: data.short_url });
+                res.json({ original_url: data.original_url, short_url: data.short_url, message: data.message, error: data.error });
                 // res.redirect(data.original_url);
             }
         });
@@ -117,6 +118,26 @@ router.get('/api/shorturl/:id', function (req, res, next) {
     else {
         res.json(errorJSON);
     }
+});
+
+router.delete('/api/shorturl', function (req, res, next) {
+    console.log(`Input Body: ${req.body}`);
+    urlshortener.removeUrlById(JSON.parse(req.body).short_url, function (err, data) {
+        if (err) {
+            console.log(`Error in response: ${err}`);
+            return next(err);
+        }
+        if (!data) {
+            console.log('Missing `done()` argument');
+            // return next({message: "Missing callback argument"});
+            res.json({ message: data.message })
+            return next({ message: data.message });
+        }
+        else {
+            console.log(`Response Data: ${JSON.stringify(data)}`);
+            res.json({ original_url: data.original_url, short_url: data.short_url, message: data.message, error: data.error });
+        }
+    });
 });
 
 app.use('/', router);

@@ -61,9 +61,11 @@ const insertAndSaveUrl = (input, done) => {
 					let urlObject = URL({ original_url: originalUrl, short_url: count + 1 });
 					URL.create(urlObject, (createError, urlCreated) => {
 						if (createError) {
+							createError.message = "Error creating record"; 
 							done(null, createError);
 							return console.log(`Error creating document: ${createError}`);
 						}
+						urlCreated.message = "Record created successfully";
 						done(null, urlCreated);
 					});
 				});
@@ -71,17 +73,12 @@ const insertAndSaveUrl = (input, done) => {
 
 			// If there is response / URL found in DB
 			else {
+				response.message = "URL already exists";
 				console.log(`findUrl Result: ${response}`);
 				done(null, response);
 			}
 		});
 	});
-	// let newUrl = URL({ original_url: input, short_url: 0 });
-	// newUrl.save(function (err, urlInserted) {
-	// 	if (err) return console.log(`Error in save: ${err}`);
-	// 	console.log(`Insert and Save URL: ${urlInserted}`)
-	// 	done(null, urlInserted);
-	// });
 };
 
 const findUrlByAddress = (input, done) => {
@@ -100,11 +97,12 @@ const findUrlById = (input, done) => {
 			console.log(`Error in findUrlById: ${urlFound}`);
 			return { error: "Invalid URL" };
 		}
-		if (urlFound == null) {
+		if (urlFound === null) {
 			// console.log(`ResponseCode: ${response.statusCode}`);
 			done(null, ({ error: "Invalid URL" }));
 			return ({ error: "Invalid URL" });
 		}
+		urlFound.message = "URL found successfully";
 		console.log(`findUrlById: ${urlFound}`);
 		done(null, urlFound);
 	});
@@ -127,8 +125,27 @@ const extractUrlHostName = (url) => {
 	return { hostname, address };
 }
 
+const removeUrlById = (input, done) => {
+	URL.findOneAndRemove({ short_url: input }, (err, urlRemoved) => {
+		if (err) {
+			console.log(`Error removing record ${input}: ${err}`);
+			done(null, { error: "Error removing record" });
+			return { error: "Error removing record" };
+		}
+		if(urlRemoved === null) {
+			console.log("No record exists for provided input");
+			done(null, {message: "No record exists for provided input"});
+			return {message: "No record exists for provided input"};
+		}
+		urlRemoved.message = "Record successfully removed";
+		console.log(`Record successfully removed: ${urlRemoved}`);
+		done(null, urlRemoved);
+	})
+}
+
 
 exports.URLModel = URL;
 exports.insertAndSaveUrl = insertAndSaveUrl;
 exports.findUrlByAddress = findUrlByAddress;
 exports.findUrlById = findUrlById;
+exports.removeUrlById = removeUrlById;
