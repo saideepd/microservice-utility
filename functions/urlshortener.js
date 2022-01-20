@@ -84,7 +84,11 @@ const insertAndSaveUrl = (input, done) => {
 const findUrlByAddress = (input, done) => {
 	console.log(`Input to findUrlByAddress: ${input}`);
 	URL.findOne({ original_url: input }, function (err, urlFound) {
-		if (err) return console.log(`Error in findUrl: ${err}`);
+		if (err) {
+			console.log(`Error in findUrlById: ${urlFound}`);
+			done(null, ({ error: "Invalid URL", message: "There was some error while fetching data" }));
+			return console.log(`Error in findUrl: ${err}`);
+		}
 		console.log(`findUrl: ${urlFound}`);
 		done(null, urlFound);
 		return urlFound;
@@ -95,12 +99,12 @@ const findUrlById = (input, done) => {
 	URL.findOne({ short_url: input }, function (err, urlFound) {
 		if (err) {
 			console.log(`Error in findUrlById: ${urlFound}`);
-			return { error: "Invalid URL" };
+			done(null, ({ error: "Invalid URL", message: "There was some error while fetching data" }));
+			return { error: "Invalid URL", message: "There was some error while fetching data" };
 		}
 		if (urlFound === null) {
-			// console.log(`ResponseCode: ${response.statusCode}`);
-			done(null, ({ error: "Invalid URL" }));
-			return ({ error: "Invalid URL" });
+			done(null, ({ error: "Invalid URL", message: "No record exists for provided input" }));
+			return ({ error: "Invalid URL", message: "No record exists for provided input" });
 		}
 		urlFound.message = "URL found successfully";
 		console.log(`findUrlById: ${urlFound}`);

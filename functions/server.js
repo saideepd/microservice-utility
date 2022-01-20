@@ -75,8 +75,9 @@ router.get("/api/:date?", function (req, res) {
 
 // URL Shortener API endpoint
 router.post('/api/shorturl', function (req, res, next) {
-    console.log(`Input Body: ${req.body}`);
-    urlshortener.insertAndSaveUrl(JSON.parse(req.body).url, function (err, data) {
+    let decodedInputUrl = decodeURIComponent(req.body).replace("url=","");
+    console.log(`Input Body: ${decodedInputUrl}`);
+    urlshortener.insertAndSaveUrl(decodedInputUrl, function (err, data) {
         if (err) {
             console.log(`Error in response: ${err}`);
             return next(err);
@@ -91,9 +92,9 @@ router.post('/api/shorturl', function (req, res, next) {
     });
 });
 
-router.get('/api/shorturl/:id', function (req, res, next) {
+router.get('/api/shorturl/:id?', function (req, res, next) {
     console.log(`Input Id: ${req.params.id}`);
-    let errorJSON = { error: "Invalid URL" };
+    let errorJSON = { error: "Invalid URL", message: "No record exists for provided input" };
 
     // Check if input Id is number
     if (!req.params.id.match(/[\D+]/ig)) {
