@@ -75,7 +75,7 @@ router.get("/api/:date?", function (req, res) {
 
 // URL Shortener API endpoint
 router.post('/api/shorturl', function (req, res, next) {
-    let decodedInputUrl = decodeURIComponent(req.body).replace("url=","");
+    let decodedInputUrl = decodeURIComponent(req.body).replace("url=", "");
     console.log(`Input Body: ${decodedInputUrl}`);
     urlshortener.insertAndSaveUrl(decodedInputUrl, function (err, data) {
         if (err) {
@@ -87,9 +87,15 @@ router.post('/api/shorturl', function (req, res, next) {
             res.json({ message: "Error creating record" });
             return next({ message: "Error creating record" });
         }
-        console.log(`Response Data: ${data}`);
-        res.json({ original_url: data.original_url, short_url: data.short_url });
-        // res.json({ original_url: data.original_url, short_url: data.short_url, message: data.message, error: data.error });
+        if (data.error) {
+            console.log(`Error in response data: ${JSON.stringify(data)}`);
+            res.json(data);
+        }
+        else {
+            console.log(`Response Data: ${data}`);
+            res.json({ original_url: data.original_url, short_url: data.short_url });
+            // res.json({ original_url: data.original_url, short_url: data.short_url, message: data.message, error: data.error });
+        }
     });
 });
 
