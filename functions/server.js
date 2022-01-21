@@ -88,7 +88,8 @@ router.post('/api/shorturl', function (req, res, next) {
             return next({ message: "Error creating record" });
         }
         console.log(`Response Data: ${data}`);
-        res.json({ original_url: data.original_url, short_url: data.short_url, message: data.message, error: data.error });
+        res.json({ original_url: data.original_url, short_url: data.short_url });
+        // res.json({ original_url: data.original_url, short_url: data.short_url, message: data.message, error: data.error });
     });
 });
 
@@ -111,8 +112,8 @@ router.get('/api/shorturl/:id?', function (req, res, next) {
             }
             else {
                 console.log(`Response Data: ${JSON.stringify(data)}`);
-                res.json({ original_url: data.original_url, short_url: data.short_url, message: data.message, error: data.error });
-                // res.redirect(data.original_url);
+                // res.json({ original_url: data.original_url, short_url: data.short_url, message: data.message, error: data.error });
+                res.redirect(data.original_url);
             }
         });
     }
@@ -136,7 +137,8 @@ router.delete('/api/shorturl', function (req, res, next) {
         }
         else {
             console.log(`Response Data: ${JSON.stringify(data)}`);
-            res.json({ original_url: data.original_url, short_url: data.short_url, message: data.message, error: data.error });
+            res.json({ original_url: data.original_url, short_url: data.short_url });
+            // res.json({ original_url: data.original_url, short_url: data.short_url, message: data.message, error: data.error });
         }
     });
 });
