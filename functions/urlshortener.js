@@ -159,7 +159,7 @@ const findMaxId = (_input, done) => {
 }
 
 const removeUrlById = (input, done) => {
-	URL.findOneAndRemove({ short_url: input }, (err, urlRemoved) => {
+	URL.findOneAndRemove({ short_url: { $eq: input } }, (err, urlRemoved) => {
 		if (err) {
 			console.log(`Error removing record ${input}: ${err}`);
 			done(null, { error: "Error removing record" });
