@@ -66,11 +66,16 @@ Access the API using either of these 2 services:
 ```
 
 ---
-This project taught me the following new skills:
+#### This project taught me the following new skills:
 - Netlify Serverless Functions
 - Limiting the number of requests per minute to avoid crossing any cloud service's plan limits
 - Simple way to build APIs using ExpressJS
 - DOM Manipulation using JavaScript
 - Connecting to & using MongoDB as a database for a web app
 - Using Mongoose library to interact with MongoDB
-- Validating of URL using Node's inbuilt dns library
+- Validating of URL using Node's inbuilt DNS library
+
+---
+### Screenshot:
+
+![microservice-utility-homepage](https://user-images.githubusercontent.com/30663492/150652757-b4311c01-8b60-475e-9e71-34ba60893298.png)
