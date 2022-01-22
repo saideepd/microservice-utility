@@ -40,7 +40,7 @@ const insertAndSaveUrl = (input, done) => {
 		}
 
 		// Find the URL in DB if it already exist
-		findUrlByAddress(originalUrl, function (request, response, next) {
+		findUrlByAddress(input, function (request, response, next) {
 			console.log(`findUrl Result: ${response}`);
 			let t = setTimeout(() => {
 				next({ message: "Timeout" });
@@ -69,7 +69,7 @@ const insertAndSaveUrl = (input, done) => {
 						console.log(`Max count: ${maxCount}; ${typeof maxCount}; ${typeof JSON.parse(maxCount)}`);
 
 						// Form a URL object
-						let urlObject = URL({ original_url: originalUrl, short_url: JSON.parse(maxCount) + 1 });
+						let urlObject = URL({ original_url: input, short_url: JSON.parse(maxCount) + 1 });
 
 						// Create a record in the DB for URL object formed above
 						URL.create(urlObject, (createError, urlCreated) => {
