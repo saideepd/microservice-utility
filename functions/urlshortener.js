@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const dns = require('dns');
 // const { response } = require('express');
 
-const TIMEOUT = 1000;
+const TIMEOUT = 10000;
 
 let connection = mongoose.connect
 	(process.env.MONGO_URI, {
@@ -50,25 +50,38 @@ const insertAndSaveUrl = (input, done) => {
 			// If there is no response / the URL is not found in DB
 			if (!response) {
 
-				// Get the total count of documents / records in DB
-				URL.estimatedDocumentCount((countError, count) => {
-					if (countError) {
-						done(null, countError);
-						return console.log(`Error in estimating the document count: ${countError}`);
-					}
-
-					// Form a URL object as per schema & insert into DB
-					let urlObject = URL({ original_url: originalUrl, short_url: count + 1 });
-					URL.create(urlObject, (createError, urlCreated) => {
-						if (createError) {
-							createError.message = "Error creating record"; 
-							done(null, createError);
-							return console.log(`Error creating document: ${createError}`);
+				// Get the max short_url of records in DB
+				URL.find({})
+					.sort({ short_url: 'desc' })
+					.limit(1)
+					.select('short_url')
+					.exec((countError, data) => {
+						if (countError) {
+							console.log(`Error finding max Id: ${countError}`);
+							done(null, countError);
+							return { error: countError };
 						}
-						urlCreated.message = "Record created successfully";
-						done(null, urlCreated);
+						const maxCount = JSON.parse(JSON.stringify(data))
+							.map((item) => {
+								return item.short_url;
+							});
+
+						console.log(`Max count: ${maxCount}; ${typeof maxCount}; ${typeof JSON.parse(maxCount)}`);
+
+						// Form a URL object
+						let urlObject = URL({ original_url: originalUrl, short_url: JSON.parse(maxCount) + 1 });
+
+						// Create a record in the DB for URL object formed above
+						URL.create(urlObject, (createError, urlCreated) => {
+							if (createError) {
+								createError.message = "Error creating record";
+								done(null, createError);
+								return console.log(`Error creating document: ${createError}`);
+							}
+							urlCreated.message = "Record created successfully";
+							done(null, urlCreated);
+						});
 					});
-				});
 			}
 
 			// If there is response / URL found in DB
@@ -125,8 +138,25 @@ const extractUrlHostName = (url) => {
 		console.log('Extracted Address: ' + address);
 	}
 	// Return only the extracted hostname
-	// console.log('Match2: ' + hostname);
 	return { hostname, address };
+}
+
+// Not currently being used but logic is used in insertAndSaveUrl
+const findMaxId = (_input, done) => {
+	URL.find({}).sort({ short_url: 'desc' }).limit(1).select('short_url').exec((countError, data) => {
+		if (countError) {
+			console.log(`Error finding max Id: ${countError}`);
+			done(null, countError);
+			return { error: countError };
+		}
+		const maxCount = JSON.parse(JSON.stringify(data))
+			.map((item) => {
+				return item.short_url;
+			});
+		console.log(`findMaxId response: ${data}`);
+		console.log(`maxCount value: ${maxCount}`);
+		return maxCount;
+	});
 }
 
 const removeUrlById = (input, done) => {
@@ -136,15 +166,15 @@ const removeUrlById = (input, done) => {
 			done(null, { error: "Error removing record" });
 			return { error: "Error removing record" };
 		}
-		if(urlRemoved === null) {
+		if (urlRemoved === null) {
 			console.log("No record exists for provided input");
-			done(null, {message: "No record exists for provided input"});
-			return {message: "No record exists for provided input"};
+			done(null, { message: "No record exists for provided input" });
+			return { message: "No record exists for provided input" };
 		}
 		urlRemoved.message = "Record successfully removed";
 		console.log(`Record successfully removed: ${urlRemoved}`);
 		done(null, urlRemoved);
-	})
+	});
 }
 
 
