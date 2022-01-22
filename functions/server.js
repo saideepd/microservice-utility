@@ -16,11 +16,19 @@ app.use(function (req, res, next) {
     next();
 });
 
+
+const keyGenerator = function (req, res) {
+    console.log(`IP Address: ${req.headers['publicIp']}, ${req.headers['ip']}, ${req.headers['client-ip']}`);
+    return req.headers['publicIp'] || req.headers['ip'] || req.headers['client-ip'];
+};
+
 // Set up rate limiter: maximum of 10 requests per minute
 const rateLimit = require('express-rate-limit');
 const limiter = rateLimit({
     windowMs: 1 * 60 * 1000, // 1 Minute
-    max: 60
+    max: 60,
+    skipSuccessfulRequests: true,
+    keyGenerator: keyGenerator
 });
 
 // apply rate limiter to API requests
