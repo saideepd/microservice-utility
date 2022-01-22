@@ -3,7 +3,6 @@ const timestamp = require('./timestamp');
 const urlshortener = require('./urlshortener');
 const app = express();
 const serverless = require('serverless-http');
-const bodyParser = require('body-parser');
 const router = express.Router();
 
 // enable CORS

@@ -1,7 +1,6 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 const dns = require('dns');
-// const { response } = require('express');
 
 const TIMEOUT = 10000;
 
