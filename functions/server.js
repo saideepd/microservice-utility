@@ -4,12 +4,17 @@ const urlshortener = require('./urlshortener');
 const app = express();
 const serverless = require('serverless-http');
 const multer = require('multer');
-const upload = multer().single('upfile');
+const maxFileSize = 10 * 1000 * 1000;
+const multerStorage = multer.memoryStorage();
+const upload = multer({ storage: multerStorage, limits: { fileSize: maxFileSize } }).single('upfile');
 const router = express.Router();
+const bodyParser = require('body-parser');
 
 // enable CORS
 const cors = require('cors');
 app.use(cors({ optionsSuccessStatus: 200 }));
+app.use(bodyParser.json({limit: '10mb'}));
+app.use(bodyParser.urlencoded({limit: '10mb', parameterLimit: 100000, extended: true}));
 
 // Hide X-powered-by header ;)
 app.use(function (req, res, next) {
@@ -165,18 +170,38 @@ router.delete('/api/shorturl', function (req, res, next) {
 });
 
 // File Metadata API Endpoint
-router.post('/api/filemetadata', upload, function (req, res, next) {
-    if (req.file) {
-        const { originalname: name, mimetype: type, size } = req.file;
-        console.log(`File Details - originalname: ${name}, mimetype: ${type}, size: ${size}`);
-        res.json({ "name": name, "type": type, "size": size });
-    }
-    else if (res.statusCode >= 400 && res.statusCode <= 499) {
-        res.json({ "error": "Please upload a file" });
-    }
-    else {
-        res.json({ "error": "Please upload a file" });
-    }
+router.post('/api/filemetadata', function (req, res, next) {
+    upload(req, res, (err) => {
+        if (err || req.file.size > 10000000) {
+            console.log(`Error uploading file: ${err}`);
+            res.json({ "error": "The file is too large" });
+            return next(err);
+        }
+        else {
+            if (req.file) {
+                req.file.stream.resume()
+                const { originalname: name, mimetype: type, size } = req.file;
+                console.log(`File Details - originalname: ${name}, mimetype: ${type}, size: ${size}`);
+                res.json({ "name": name, "type": type, "size": size });
+                return next({ "name": name, "type": type, "size": size });
+            }
+            else if (res.statusCode >= 400 && res.statusCode <= 499) {
+                console.log(`400 Error: ${res.statusCode}, ${res.statusMessage}`);
+                res.json({ "error": "Please upload a file" });
+                return next({ "error": "Please upload a file" });
+            }
+            else if (res.statusCode >= 500 && res.statusCode <= 599) {
+                console.log(`500 Error: ${res.statusCode}, ${res.statusMessage}`);
+                res.json({ "error": "There was some error uploading file to the server" });
+                return next({ "error": "There was some error uploading file to the server" });
+            }
+            else {
+                console.log(`Else Error: ${res.statusCode}, ${res.statusMessage}`);
+                res.json({ "error": "Please upload a file" });
+                return next({ "error": "Please upload a file" });
+            }
+        }
+    });
 });
 
 app.use('/', router);
