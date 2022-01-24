@@ -179,7 +179,6 @@ router.post('/api/filemetadata', function (req, res, next) {
         }
         else {
             if (req.file) {
-                req.file.stream.resume()
                 const { originalname: name, mimetype: type, size } = req.file;
                 console.log(`File Details - originalname: ${name}, mimetype: ${type}, size: ${size}`);
                 res.json({ "name": name, "type": type, "size": size });
