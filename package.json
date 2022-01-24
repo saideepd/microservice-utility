@@ -24,6 +24,7 @@
     "express": "^4.17.2",
     "express-rate-limit": "^6.1.0",
     "mongoose": "^6.1.6",
+    "multer": "^1.4.4",
     "serverless-http": "^2.7.0"
   }
 }
