@@ -86,7 +86,7 @@ router.get("/api/:date?", function (req, res) {
 
 // URL Shortener API endpoint
 router.post('/api/shorturl', function (req, res, next) {
-    let decodedInputUrl = decodeURIComponent(req.body).replace("url=", "");
+    let decodedInputUrl = req.body.url ?? decodeURIComponent(req.body).replace("url=", "");
     console.log(`Input Body: ${decodedInputUrl}`);
     // Handle Blank or null or undefined input value
     if (!decodedInputUrl || decodedInputUrl.length == 0 || decodedInputUrl.match(/^(\+)+$/ig)) {
