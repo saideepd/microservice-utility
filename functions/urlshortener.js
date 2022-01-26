@@ -95,7 +95,7 @@ const insertAndSaveUrl = (input, done) => {
 
 const findUrlByAddress = (input, done) => {
 	console.log(`Input to findUrlByAddress: ${input}`);
-	URL.findOne({ original_url: input }, function (err, urlFound) {
+	URL.findOne({ original_url: { $eq: input } }, function (err, urlFound) {
 		if (err) {
 			console.log(`Error in findUrlById: ${urlFound}`);
 			done(null, ({ error: "Invalid URL", message: "There was some error while fetching data" }));
