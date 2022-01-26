@@ -25,6 +25,9 @@ Access the API using either of these 2 services:
     "utc": "Sat, 15 Jan 2022 00:00:00 GMT"
 }
 ```
+#### Screenshot:
+![Timestamp Microservice API](https://user-images.githubusercontent.com/30663492/151173843-47be7332-f65c-46bb-b719-9a7844a92e11.png "Timestamp Microservice API")
+
 
 ## 2. Who Am I Microservice API
 
@@ -45,6 +48,9 @@ Access the API using either of these 2 services:
   "software": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36"
 }
 ```
+#### Screenshot:
+![Who Am I Microservice API](https://user-images.githubusercontent.com/30663492/151174071-51f5eeae-e3ec-4bd9-bcac-e710c54442dd.png "Who Am I Microservice API")
+
 
 ## 3. URL Shortener Microservice API
 
@@ -64,6 +70,33 @@ Access the API using either of these 2 services:
   "short_url": 1
 }
 ```
+#### Screenshot:
+![URL Shortener Microservice API](https://user-images.githubusercontent.com/30663492/151174281-fa71b64d-446d-44ab-b6ea-c60496804909.png "URL Shortener Microservice API")
+
+
+## 4. File Metadata Microservice API
+
+File Metadata Microservice API is a service that helps you to analyse your files by knowing its metadata. This app provides a simple UI to upload your files & the API provides information of the file like its name, type & size.
+The API uses Multer as a middleware to handle file uploads. Currently the API is configured to only accept files below 10 Mb in size due to server limitations, but that can be configured as per requirements & server plans.
+
+Access the API using either of these 2 services:
+- Netlify: [https://metafile.netlify.app](https://metafile.netlify.app "File Metadata Microservice API hosted on Netlify")
+- Replit: [https://metafile.saideepd.repl.co/](https://metafile.saideepd.repl.co/ "File Metadata Microservice API hosted on Replit")
+
+### Example Usage:
+- [[project url]/api/fileanalyse](https://metafile.netlify.app/api/fileanalyse)
+
+### Example Output:
+```json
+{
+  "name": "github_icon_grey.png",
+  "type": "image/png",
+  "size": 224
+}
+```
+#### Screenshot:
+![File Metadata Microservice API](https://user-images.githubusercontent.com/30663492/151174432-450feaf2-0ae3-4b7a-ab7b-6ecea119cf98.png "File Metadata Microservice API")
+
 
 ---
 #### This project taught me the following new skills:
@@ -74,8 +107,12 @@ Access the API using either of these 2 services:
 - Connecting to & using MongoDB as a database for a web app
 - Using Mongoose library to interact with MongoDB
 - Validating of URL using Node's inbuilt DNS library
+- Using Multer library as a middleware to handle file uploads
+- Storing the files to either Disk or Memory using multer
+- Limiting the size of files allowed to be uploaded using multer & body-parser
+- Learnt about HTML events like onload, onbeforeunload, onformchange, etc.
 
 ---
 ### Screenshot:
 
-![microservice-utility-homepage](https://user-images.githubusercontent.com/30663492/150652757-b4311c01-8b60-475e-9e71-34ba60893298.png)
+![Microservice Utility APIs Homepage](https://user-images.githubusercontent.com/30663492/151171054-e2516279-bc9e-42a7-9eeb-796133c77f4e.png "Microservice Utility APIs Homepage")
